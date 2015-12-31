@@ -51,6 +51,11 @@
 #include "sockhelp.c"
 
 #undef SHOW_ENDIAN_MADNESS
+//////////////////////////////////////////////////////////////////////////////
+//// dummy - seems gcc adds static functions, whether they are used or not,
+//// and this is needed for static check_key_sleep(...) not used here.
+int check_key() { return 0; }   // dummy - used in static funct not used
+//////////////////////////////////////////////////////////////////////////////
 
 char * hexify_per_length(char * dst, char * src, int max)
 {

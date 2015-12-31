@@ -22,4 +22,6 @@ unix_client
 unix_server
 udpclient
 udpserver
+udpclient2
+udpserver2
 
