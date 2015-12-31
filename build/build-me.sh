@@ -1,5 +1,5 @@
 #!/bin/sh
-#< build-me.sh - for fgio-11 - 20141118 
+#< build-me.sh - for tcp-tests - 20151231 - was fgio 20141118 
 BN=`basename $0`
 
 # relative SOURCE - adjust as needed
