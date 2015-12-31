@@ -1,0 +1,19 @@
+### 14 executables #############################################
+
+nbclient.cxx
+nbserver.cxx
+unix_client.cxx
+unix_server.cxx
+httpget.cxx
+
+udpclient.cxx
+udpclient2.cxx
+simp_client.cxx
+recvfrom.cxx
+simp_server.cxx simp_common.hxx
+ebsocket.c ebsocket.h
+udpserver2.cxx
+sendto.cxx
+udpserver.cxx
+
+# eof
