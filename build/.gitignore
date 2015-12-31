@@ -14,4 +14,7 @@ config.h
 ipch/*
 *.sdf
 *.suo
+Makefile
+ebsocket
+nbclient
 
