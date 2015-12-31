@@ -1,3 +1,4 @@
+/* ebsocket.c - first update since WIN32 NT arrived */
 /* socket.c: NT/Unix socket layer for portable applications */
 
 /*********************************************************************
@@ -256,9 +257,9 @@ int tcp_connect(IP32bit ip, int portnum, int timeout)
 		struct timeval s_restrict;
 		s_restrict.tv_sec = timeout;
 		s_restrict.tv_usec = 0;
-		setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &s_restrict,
+		setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char *)&s_restrict,
 			   sizeof(s_restrict));
-		setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &s_restrict,
+		setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (const char *)&s_restrict,
 			   sizeof(s_restrict));
 	}
 
