@@ -114,22 +114,13 @@
 #include <memory.h>
 
 #ifdef _MSC_VER
+///////////////////////////////////////////////////////////
 #include <conio.h>
 #include <WS2tcpip.h>
+///////////////////////////////////////////////////////////
 #else // !_MSC_VER
+///////////////////////////////////////////////////////////
 #include <unistd.h>
-/* Required to get portable printf/scanf format macros */
-#ifdef HAVE_INTTYPES_H
-/* The ISO C99 standard specifies that these macros must only be
-   defined if explicitly requested. 
-#if !defined __cplusplus || defined __STDC_FORMAT_MACROS */
-#ifndef __STDC_FORMAT_MACROS
-#define __STDC_FORMAT_MACROS
-#endif /* !__STDC_FORMAT_MACROS */
-#include <inttypes.h>
-#else
-#error Need to define portable format macros such as PRIu64
-#endif /* HAVE_INTTYPES_H */
 #include <sys/types.h> /* Types used in sys/socket.h and netinet/in.h */
 #include <sys/socket.h> /* accept(), bind(), connect(), listen(), recv(), send(), setsockopt(), shutdown(), etc ... */
 #include <netinet/in.h> /* Internet domain address structures and functions */
@@ -137,8 +128,11 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/errno.h>
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h>
 #include <termios.h>
-#endif
+///////////////////////////////////////////////////////////
+#endif  // _MSC_VER y/n
 
 #include "simp_common.hxx" // common to SERVER and CLIENT
 #include "winsockerr.cxx"

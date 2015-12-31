@@ -79,8 +79,6 @@ endmacro()
 set(simpserv_SRCS src/simp_server.cxx src/simp_common.hxx)
 
 if (WIN32)
-    ADD_EXE( simp_server "${simpserv_SRCS}" "${add_LIBS}" )
-    ADD_EXE( simp_client src/simp_client.cxx "${add_LIBS}" )
     if (ADD_METAR2)
         ADD_EXE( metar2 src/metar/metar_main.cxx "${add_LIBS}" )
     endif ()
@@ -89,6 +87,8 @@ if (WIN32)
 endif()
 
 # common unix/windows
+ADD_EXE( simp_server "${simpserv_SRCS}" "${add_LIBS}" )
+ADD_EXE( simp_client src/simp_client.cxx "${add_LIBS}" )
 ADD_EXE( udpserver src/udpserver.cxx "${add_LIBS}" )
 ADD_EXE( udpclient src/udpclient.cxx "${add_LIBS}" )
 ADD_EXE( udpserver2 src/udpserver2.cxx "${add_LIBS}" )

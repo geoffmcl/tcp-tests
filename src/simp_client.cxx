@@ -35,25 +35,19 @@
 #include <limits.h>
 
 #ifdef _MSC_VER
+////////////////////////////////////////////////////////////////
 #include <io.h>
 #include <conio.h>
+////////////////////////////////////////////////////////////////
 #else // !_MSC_VER
-/* Required to get portable printf/scanf format macros */
-#ifdef HAVE_INTTYPES_H
-/* The ISO C99 standard specifies that these macros must only be
-   defined if explicitly requested. 
-#if !defined __cplusplus || defined __STDC_FORMAT_MACROS */
-#ifndef __STDC_FORMAT_MACROS
-#define __STDC_FORMAT_MACROS
-#endif /* !__STDC_FORMAT_MACROS */
-#include <inttypes.h> /* for PRIu64, ... */
-#else
-#error Need to define portable format macros such as PRIu64
-#endif /* HAVE_INTTYPES_H */
+////////////////////////////////////////////////////////////////
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h> /* for PRIu64, ... */
 #include <termios.h>
+////////////////////////////////////////////////////////////////
 #endif // _MSC_VER
 
 #include "simp_common.hxx"
