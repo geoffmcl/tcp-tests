@@ -38,6 +38,8 @@ If you do not wish to do so, delete this exception statement from your version.
 #include <sys/select.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <ctype.h> // for isdigit, ...
+#include <arpa/inet.h>  // inet_addr, ...
 #if 0
 #include <openssl/ssl.h>
 #include <openssl/err.h>	/* for error-retrieval */
@@ -533,7 +535,7 @@ int main(int argc, char **argv)
 
 	tcp_init();
 	ip = inet_thisMachineIP;
-	printf("%s\n%s\n%08lx\n", inet_thisMachineName, inet_thisMachineDots,
+	printf("%s\n%s\n%08x\n", inet_thisMachineName, inet_thisMachineDots,
 	       ip);
 
 	if (inet_name_ip(inet_ip_name(ip)) != ip)
@@ -560,7 +562,7 @@ int main(int argc, char **argv)
 			exit(0);
 		}
 
-		while (nb = tcp_read(fh, buf, sizeof(buf))) {
+		while ((nb = tcp_read(fh, buf, sizeof(buf))) != 0) {
 			if (nb < 0) {
 				fprintf(stderr, "read failed, errno %d\n",
 					errno);
