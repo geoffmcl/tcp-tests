@@ -156,6 +156,11 @@ int nb_sock_gets_NOT_USED(struct connect_info *sock_info, char *buf, size_t coun
 	return 0; /* Not an error, no data read, so must be closed. */
 }
 #endif // #ifdef KEEP_CLIENT_DATA
+///////////////////////
+//// dummy - seems gcc adds static functions, whether they are used or not,
+//// and this is needed for static check_key_sleep(...) not used here.
+int check_key() { return 0; }
+////////////////////////
 
 void build_select_list(void)
 {
