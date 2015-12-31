@@ -79,8 +79,6 @@ endmacro()
 set(simpserv_SRCS src/simp_server.cxx src/simp_common.hxx)
 
 if (WIN32)
-    ADD_EXE( udpserver src/udpserver.cxx "${add_LIBS}" )
-    ADD_EXE( udpclient src/udpclient.cxx "${add_LIBS}" )
     ADD_EXE( udpserver2 src/udpserver2.cxx "${add_LIBS}" )
     ADD_EXE( udpclient2 src/udpclient2.cxx "${add_LIBS}" )
     ADD_EXE( simp_server "${simpserv_SRCS}" "${add_LIBS}" )
@@ -93,6 +91,8 @@ if (WIN32)
 endif()
 
 # common unix/windows
+ADD_EXE( udpserver src/udpserver.cxx "${add_LIBS}" )
+ADD_EXE( udpclient src/udpclient.cxx "${add_LIBS}" )
 ADD_EXE( unix_server src/unix_server.cxx "${add_LIBS}" )
 ADD_EXE( unix_client src/unix_client.cxx "${add_LIBS}" )
 

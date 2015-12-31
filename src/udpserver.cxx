@@ -36,6 +36,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h> // for PRIu64, ...
 #endif // !_MSC_VER
 
 #include "winsockerr.cxx"
@@ -106,7 +108,8 @@ static void show_help(void)
     show_stats();
 }
 
-static int check_key(void)
+// static
+int check_key(void)
 {
     int chr = 0;
 #ifdef GOT_KEYBOARD_TEST

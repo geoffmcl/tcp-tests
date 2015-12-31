@@ -36,6 +36,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h> // for PRIu64, ...
 #endif // !_MSC_VER
 
 #include "winsockerr.cxx"
@@ -108,7 +110,8 @@ static void show_help(void)
     show_stats();
 }
 
-static int check_key(void)
+// static
+int check_key(void)
 {
     int chr = 0;
 #ifdef GOT_KEYBOARD_TEST
@@ -181,7 +184,7 @@ int run_udpclient(SOCKET sd, struct sockaddr_in * serveraddr)
     char *bufptr = buffer;
     int buflen = sizeof(buffer);
     int rc;
-    int serveraddrlen = (int)sizeof(struct sockaddr_in);
+    socklen_t serveraddrlen = (socklen_t)sizeof(struct sockaddr_in);
     int repeat = 1;
 
     cycle_time = time(0);
