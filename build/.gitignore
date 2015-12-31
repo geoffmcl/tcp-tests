@@ -17,4 +17,7 @@ ipch/*
 Makefile
 ebsocket
 nbclient
+nbserver
+unix_client
+unix_server
 
