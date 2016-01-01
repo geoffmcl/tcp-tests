@@ -211,7 +211,7 @@ char * get_to_stg(void)
 {
     static char to[32];
     set_time_out();
-    sprintf(to, "%u.%06u secs", timeout.tv_sec, timeout.tv_usec);
+    sprintf(to, "%u.%06u secs", (unsigned int)timeout.tv_sec, (unsigned int)timeout.tv_usec);
     return to;
 }
 
@@ -255,10 +255,10 @@ void show_stats(void)
     // show it
     printf("Stats: %4" PRIu64 " sends, %6" PRIu64 " bytes, %4" PRIu64 " recvs, %6" PRIu64 " bytes",
         sends_done, sent_bytes, recvs_done, recv_bytes );
-    printf(" in %d secs,\n", elapsed1);
+    printf(" in %d secs,\n", (int)elapsed1);
     printf("Total: %4" PRIu64 " sends, %6" PRIu64 " bytes, %4" PRIu64 " recvs, %6" PRIu64 " bytes",
         t_sends_done, t_sent_bytes, t_recvs_done, t_recv_bytes );
-    printf(" in %d secs.\n", elapsed2 );
+    printf(" in %d secs.\n", (int)elapsed2 );
     // clear running totals
     sends_done = 0;
     sent_bytes = 0;
@@ -268,7 +268,7 @@ void show_stats(void)
     last_time = curr_time;
 }
 
-#define OUT_SS(a) printf(a.str().c_str()); a.str("")
+#define OUT_SS(a) printf("%s", a.str().c_str()); a.str("")
 void show_help(void)
 {
     ostringstream ss;
@@ -294,7 +294,7 @@ void show_help(void)
     }
     if (total_clients) {
         printf("Connected to %d clients, presently %d active\n",
-            total_clients, vInClients.size() );
+            (int)total_clients, (int)vInClients.size() );
     }
 }
 

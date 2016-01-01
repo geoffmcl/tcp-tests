@@ -141,7 +141,7 @@ char * get_to_stg(void)
 {
     static char to[32];
     set_time_out();
-    sprintf(to, "%u.%06u secs", timeout.tv_sec, timeout.tv_usec);
+    sprintf(to, "%u.%06u secs", (unsigned int)timeout.tv_sec, (unsigned int)timeout.tv_usec);
     return to;
 }
 #endif // TRY_USING_SELECT
@@ -186,10 +186,10 @@ void show_stats(void)
     // show it
     printf("Stats: %4" PRIu64 " sends, %6" PRIu64 " bytes, %4" PRIu64 " recvs, %6" PRIu64 " bytes",
         sends_done, sent_bytes, recvs_done, recv_bytes );
-    printf(" in %d secs,\n", elapsed1);
+    printf(" in %d secs,\n", (int)elapsed1);
     printf("Total: %4" PRIu64 " sends, %6" PRIu64 " bytes, %4" PRIu64 " recvs, %6" PRIu64 " bytes",
         t_sends_done, t_sent_bytes, t_recvs_done, t_recv_bytes );
-    printf(" in %d secs.\n", elapsed2 );
+    printf(" in %d secs.\n", (int)elapsed2 );
     // clear running totals
     sends_done = 0;
     sent_bytes = 0;
@@ -206,8 +206,8 @@ void show_help(void)
     printf(" e   = Toggle ECHO. Currently %s\n",
         (do_echo ? "On" : "OFF") );
 #endif // 0
-    printf(" i   = Increment throttle. Add %d ms to wait - slower. Presently %d\n", ms_wait_chg, min_ms_wait );
-    printf(" d   = Decrement throttle. Sub %d ms from wait - faster. Presently %d\n", ms_wait_chg, min_ms_wait );
+    printf(" i   = Increment throttle. Add %d ms to wait - slower. Presently %d\n", (int)ms_wait_chg, (int)min_ms_wait );
+    printf(" d   = Decrement throttle. Sub %d ms from wait - faster. Presently %d\n", (int)ms_wait_chg, (int)min_ms_wait );
     printf(" p   = Toggle PAUSE. Currently %s\n", (is_paused ? "On" : "OFF") );
     printf(" s   = Show STATS\n");
     printf(" 01259 = Set verbosity level. Now=%d\n", verbosity );
@@ -217,7 +217,7 @@ void show_help(void)
         printf("Running at %" PRIu64 " cycles per second\n",  cyc_per_sec );
     }
     if (min_ms_wait) {
-        printf("Throttled to %d millisecs, %d Hz\n", min_ms_wait, (1000 / min_ms_wait) );
+        printf("Throttled to %d millisecs, %d Hz\n", (int)min_ms_wait, (int)(1000 / min_ms_wait) );
     } else {
         printf("No throttle applied\n");
     }
@@ -249,14 +249,14 @@ Do_Next_Char:
 #endif // 0
         case 'i':
             min_ms_wait += ms_wait_chg;
-            printf("i - Incremented throttle to %d - run slower.\n", min_ms_wait );
+            printf("i - Incremented throttle to %d - run slower.\n", (int)min_ms_wait );
             break;
         case 'd':
             if (min_ms_wait > ms_wait_chg)
                 min_ms_wait -= ms_wait_chg;
             else
                 min_ms_wait = 0;
-            printf("d - Decremented throttle to %d - run faster.\n", min_ms_wait );
+            printf("d - Decremented throttle to %d - run faster.\n", (int)min_ms_wait );
             break;
         case 'p':
             pause_time = time(0);
@@ -557,7 +557,7 @@ int run_client(void)
         FD_SET(sockfd,&ListenSocket); /* set our main listening socket */
         set_time_out();
         if (VERB9)
-            printf("CLIENT: 'select' setup on sock %u, timeout %u.%06u... (%u)\n", sockfd, timeout.tv_sec, timeout.tv_usec, highest);
+            printf("CLIENT: 'select' setup on sock %u, timeout %u.%06u... (%u)\n", (unsigned int)sockfd, (unsigned int)timeout.tv_sec, (unsigned int)timeout.tv_usec, (unsigned int)highest);
         status = select( (int)highest+1, &ListenSocket, NULL, NULL, &timeout );
         if (SERROR(status)) {
             PERROR("ERROR: 'select' FAILED!");

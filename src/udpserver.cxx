@@ -341,11 +341,11 @@ void cmd_help(char * name)
 
 void test_sizes(void)
 {
-    printf("Sizeof uint32_t    = %d\n", sizeof(uint32_t)   );
-    printf("Sizeof uint64_t    = %d\n", sizeof(uint64_t)   );
-    printf("Sizeof long long   = %d\n", sizeof(long long)  );
-    printf("Sizeof a float     = %d\n", sizeof(float)      );
-    printf("Sizeof a double    = %d\n", sizeof(double)     );
+    printf("Sizeof uint32_t    = %d\n", (int)sizeof(uint32_t)   );
+    printf("Sizeof uint64_t    = %d\n", (int)sizeof(uint64_t)   );
+    printf("Sizeof long long   = %d\n", (int)sizeof(long long)  );
+    printf("Sizeof a float     = %d\n", (int)sizeof(float)      );
+    printf("Sizeof a double    = %d\n", (int)sizeof(double)     );
     exit(0);
 }
 

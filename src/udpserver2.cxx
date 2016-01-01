@@ -127,7 +127,7 @@ void UDP_S2_Help(char * name)
     printf(" -h <host> = Set HOST. Def is 0.0.0.0 (INADDR_ANY)\n");
     printf(" -p <port> = Set PORT. Def is %d\n", MY_DEF_PORT );
     printf("Establish a UDP Server waiting for a client.\n" );
-    printf("Client should send a %d byte message, being the amount of\n", sizeof(int));
+    printf("Client should send a %d byte message, being the amount of\n", (int)sizeof(int));
     printf(" increment to add to total, and send total back to client.\n");
     printf(" Cycle, and wait for next client connection.\n");
     printf("Uses simple recvfrom(), and sendto() for the reply.\n");
@@ -255,7 +255,7 @@ Bad_Option:
             count = ntohl(count);
             printf("UDP Server2 - Sent %d bytes... Waiting for next UDP client...\n",status);
         } else {
-            printf("UDP Server2 - Received %d bytes, NOT %d. Ignored... Wait next...\n",recvd, sizeof(thisinc));
+            printf("UDP Server2 - Received %d bytes, NOT %d. Ignored... Wait next...\n",(int)recvd, (int)sizeof(thisinc));
         }
     } /* FOREVER */
 

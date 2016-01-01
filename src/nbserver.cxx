@@ -367,8 +367,8 @@ void give_nb_help(char * name)
     printf(" string, in upper case, back. Compiled for max. %d clients.\n", MY_MX_CONNS);
     printf("Uses 'select()' to wait for NEW connections on the listening\n");
     printf(" port, and service client traffic, with a timeout of %u.%06u seconds.\n",
-        timeout.tv_sec,
-        timeout.tv_usec);
+        (unsigned int)timeout.tv_sec,
+        (unsigned int)timeout.tv_usec);
 #ifdef GOT_KEYBOARD_TEST
     printf("ESC key to exit forever loop...\n");
 #else
@@ -412,8 +412,8 @@ int run_nbserver(void)
     int readsocks;
     set_time_out();
     printf("NB Server(tcp) - enter loop... select() to=%u.%06u secs... waiting...\n",
-        timeout.tv_sec,
-        timeout.tv_usec);
+        (unsigned int)timeout.tv_sec,
+        (unsigned int)timeout.tv_usec);
 #ifdef GOT_KEYBOARD_TEST
     printf(" ESC key to exit loop...\n");
 #else // !#ifdef GOT_KEYBOARD_TEST

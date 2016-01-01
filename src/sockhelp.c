@@ -47,7 +47,7 @@ struct in_addr *atoaddr(char *address)
 
     /* First try it as aaa.bbb.ccc.ddd. */
     saddr.s_addr = inet_addr(address);
-    if (saddr.s_addr != -1) {
+    if (saddr.s_addr != (unsigned long)-1) {
         return &saddr;
     }
     host = gethostbyname(address);

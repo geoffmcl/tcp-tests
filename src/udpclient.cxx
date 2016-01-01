@@ -507,7 +507,7 @@ Bad_Command:
         goto Client_Exit;
     }
 
-    printf("UDP Client - begin %s - socket() is OK! value 0x%X (%u) %s\n",
+    printf("UDP Client - begin %s - socket() is OK! value 0x%X (%u)\n",
         get_datetime_str(), sd, sd );
 
     /* set non blocking, if desired */

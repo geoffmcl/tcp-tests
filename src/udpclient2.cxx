@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
                 break;
             default:
 Bad_Arg:
-                fprintf(stderr,"ERROR: Invalid argument! Try -?\n",argv[i]);
+                fprintf(stderr,"ERROR: Invalid argument '%s'! Try -?\n",argv[i]);
                 exit(EXIT_FAILURE);
                 break;
             }
@@ -211,7 +211,7 @@ Bad_Arg:
         exit(EXIT_FAILURE);
     }
     printf("UDP Client2 - Sent %d bytes. (%d). Await reply...\n",
-        status, sizeof(inc_amount) );
+        status, (int)sizeof(inc_amount) );
 
     /* Then wait for new total amount. */
     structlength = sizeof(client);
