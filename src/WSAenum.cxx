@@ -414,6 +414,17 @@ int main(int argc, char * argv[])
             show_pi(pi);
         }
     }
+    if (argc > 1) {
+        res = atoi( argv[1] );
+        if (res) {
+            char *cp = get_errmsg_text(res);
+            printf("WSA Error: %d - %s\n", res, getWSAError(res));
+            if (cp) {
+                printf("WSA System %d - %s\n", res, cp );
+                LocalFree(cp);
+            }
+        }
+    }
     sock_end();
     delete ppi;
 	return res;

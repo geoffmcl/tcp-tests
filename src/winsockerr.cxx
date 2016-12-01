@@ -317,7 +317,7 @@ void sock_init(void)
 {
 #if defined(_MSC_VER)
 	/* Start up the windows networking */
-	WORD version_wanted = MAKEWORD(1,1);
+	WORD version_wanted = MAKEWORD(2,2);
 	WSADATA wsaData;
 	if ( WSAStartup(version_wanted, &wsaData) != 0 ) {
         win_set_wsa_msg();

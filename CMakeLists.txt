@@ -114,5 +114,80 @@ if (MSVC)
     set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
 endif()
 set_target_properties(${name} PROPERTIES COMPILE_FLAGS "-DTEST_CONNECT")
+# no install of these local only test/experimental applications
+
+# 20160107 - Add WSAEnum... if WIN32
+if (WIN32)
+    set(name WSAenum)
+    set(dir src)
+    set(${name}_SRCS ${dir}/${name}.cxx ${dir}/${name}.hxx)
+    add_executable( ${name} ${${name}_SRCS} )
+    target_link_libraries( ${name} ${add_LIBS} )
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif()
+    # no install of these local only test/experimental applications
+endif ()
+
+# 20160729 udp-send and udp-recv
+set(name udp-send)
+set(dir src)
+set(${name}_SRCS ${dir}/${name}.cxx)
+#ADD_EXE( ${name} "${ebsocket_SRCS}" "${add_LIBS}" )
+add_executable( ${name} ${${name}_SRCS} )
+target_link_libraries( ${name} ${add_LIBS} )
+if (MSVC)
+    set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+endif()
+# no install of these local only test/experimental applications
+
+set(name udp-recv)
+set(dir src)
+set(${name}_SRCS ${dir}/${name}.cxx)
+#ADD_EXE( ${name} "${${name}_SRCS}" "${add_LIBS}" )
+add_executable( ${name} ${${name}_SRCS} )
+target_link_libraries( ${name} ${add_LIBS} )
+if (MSVC)
+    set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+endif()
+# no install of these local only test/experimental applications
+
+if (MSVC)
+    # a UNICODE apps
+    set(name udp-wsend)
+    set(dir src)
+    set(${name}_SRCS ${dir}/${name}.cxx)
+    #ADD_EXE( ${name} "${${name}_SRCS}" "${add_LIBS}" )
+    add_executable( ${name} ${${name}_SRCS} )
+    target_link_libraries( ${name} ${add_LIBS} )
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif()
+    # no install of these local only test/experimental applications
+    
+    set(name udp-wrecv)
+    set(dir src)
+    set(${name}_SRCS ${dir}/${name}.cxx)
+    #ADD_EXE( ${name} "${${name}_SRCS}" "${add_LIBS}" )
+    add_executable( ${name} ${${name}_SRCS} )
+    target_link_libraries( ${name} ${add_LIBS} )
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif()
+    # no install of these local only test/experimental applications
+
+    # simple app - get local ip
+    set(name getlocalip)
+    set(dir src)
+    set(${name}_SRCS ${dir}/${name}.cpp)
+    #ADD_EXE( ${name} "${${name}_SRCS}" "${add_LIBS}" )
+    add_executable( ${name} ${${name}_SRCS} )
+    target_link_libraries( ${name} ${add_LIBS} )
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif()
+    # no install of these local only test/experimental applications
+    
+endif ()
 
 # eof

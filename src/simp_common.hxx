@@ -211,6 +211,21 @@ static int check_key_sleep(int secs, char * name)
     return 0;
 }
 
+static int check_key_sleep_ms(int msecs, char * name)
+{
+    // printf("%s - Sleeping for %d ms...\n", name, msecs);
+    while (msecs) {
+        if (check_key())
+            return 1;
+        clock_wait(m_delay_time); /* usually 160ms, about 1/6 of a second - 6Hz */
+        if (msecs > m_delay_time)
+            msecs -= m_delay_time;
+        else
+            msecs = 0;
+    }
+    return 0;
+}
+
 #endif // ADDED_CLOCK_WAIT
 
 #ifndef ISNUM
