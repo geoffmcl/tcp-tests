@@ -26,4 +26,6 @@ udpclient2
 udpserver2
 simp_client
 simp_server
+udp-recv
+udp-send
 
