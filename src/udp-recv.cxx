@@ -127,6 +127,10 @@ int check_key(void)
 int do_test()
 {
     static char buffer[MX_UDP_MSG];
+    int wait_recv = 1;
+    double waited_ms = 0.0;
+    double total_wait_secs = 0.0;
+    int show_time_secs = 10;
     struct sockaddr_in svr;
     char *bufptr = buffer;
     int buflen = MX_UDP_MSG;
@@ -175,10 +179,6 @@ int do_test()
             ntohs(RecvAddr.sin_port), (int) sizeof(RecvAddr));
 
     }
-    int wait_recv = 1;
-    double waited_ms = 0.0;
-    double total_wait_secs = 0.0;
-    int show_time_secs = 10;
     
     while (wait_recv) 
     {
