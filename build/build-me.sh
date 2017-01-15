@@ -41,7 +41,7 @@ fi
 CMOPTS=""
 VERSBOSE=0
 NOSG=1
-DO_CMAKE=0
+DO_CMAKE=1
 
 if [ -f "$TMPLOG" ]; then
     rm -f $TMPLOG
@@ -53,7 +53,7 @@ give_help()
     echo "OPTIONS"
     echo " VERBOSE = Use verbose build"
     echo " CLEAN   = Clean and exit."
-    echo " DOCMAKE = Do cmake configuration whether Makefile exists or not."
+    echo " NOCMAKE = Do NOT do cmake configuration if a Makefile exists."
     echo ""
     exit 1
 }
@@ -71,7 +71,7 @@ for arg in $@; do
       case $arg in
          VERBOSE) VERBOSE=1 ;;
          CLEAN) do_clean ;;
-         DOCMAKE) DO_CMAKE=1 ;;
+         NOCMAKE) DO_CMAKE=0 ;;
          --help) give_help ;;
          -h) give_help ;;
          -\?) give_help ;;
