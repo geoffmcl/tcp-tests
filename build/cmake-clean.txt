@@ -13,4 +13,6 @@ udpclient
 udpclient2
 udpserver
 udpserver2
+udp-recv
+udp-send
 
