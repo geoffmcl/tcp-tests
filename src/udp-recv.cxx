@@ -24,6 +24,7 @@ typedef int socklen_t;
 #include <netdb.h>
 #define __STDC_FORMAT_MACROS 1
 #include <inttypes.h> // for PRIu64, ...
+typedef sockaddr SOCKADDR;
 #endif // _MSC_VER y/n
 
 #include <stdio.h>
