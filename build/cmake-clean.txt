@@ -15,4 +15,5 @@ udpserver
 udpserver2
 udp-recv
 udp-send
+ebsocket
 
