@@ -177,7 +177,7 @@ int main()
     RecvAddr.sin_addr.s_addr = inet_addr(Host);
 
     printf("UDP server - IP %s, port %d, struct len %d\n", inet_ntoa(RecvAddr.sin_addr),
-        ntohs(RecvAddr.sin_port), sizeof (RecvAddr) );
+        ntohs(RecvAddr.sin_port), (int)sizeof (RecvAddr) );
     //printf("UDP server - IP %s, port %d, struct len %d\n", Host, Port, sizeof (RecvAddr) );
 
     while (iLoop) {

@@ -476,7 +476,7 @@ Bad_Arg:
     }
 
     printf("UDP server - begin %s - socket() is OK sd=%u (0x%X)\n",
-        get_datetime_str(), sd, sd );
+        get_datetime_str(), (int)sd, (int)sd );
 
     /* set non blocking, if desired */
     if (no_blocking) {

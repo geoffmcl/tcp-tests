@@ -23,10 +23,13 @@ if (WIN32 AND MSVC)
     # turn off various warnings
     set(WARNING_FLAGS "${WARNING_FLAGS} /wd4996")
     # foreach(warning 4244 4251 4267 4275 4290 4786 4305)
-    #    set(WARNING_FLAGS "${WARNING_FLAGS} /wd${warning}")
-    #endforeach()
-
-    set( EXTRA_FLAGS "-DNOMINMAX -D_USE_MATH_DEFINES -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D__CRT_NONSTDC_NO_WARNINGS" )
+    # C4244: '=': conversion from 'SOCKET' to 'int', possible loss of data
+    # C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+    foreach(warning 4244 4267 )
+        set(WARNING_FLAGS "${WARNING_FLAGS} /wd${warning}")
+    endforeach()
+    # see no reason for this -DNOMINMAX
+    set( EXTRA_FLAGS "-D_USE_MATH_DEFINES -D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D__CRT_NONSTDC_NO_WARNINGS" )
     # if (${MSVC_VERSION} EQUAL 1600)
     #    list(APPEND EXTRA_LD_FLAGS "/FORCE:MULTIPLE" )
     # endif (${MSVC_VERSION} EQUAL 1600)

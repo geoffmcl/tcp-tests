@@ -219,7 +219,7 @@ void handle_new_connection(void) {
     {
 		if (connectlist[listnum].fd == 0) {
 			printf("NB Server(tcp) - Connection accepted: FD=%d; Slot=%d of %d\n",
-				connection,(listnum+1),MY_MX_CONNS);
+				(int)connection,(listnum+1),MY_MX_CONNS);
 #ifdef GET_CLIENT_INFO
             memcpy(&connectlist[listnum],&CLI_CI,sizeof(CLI_CI));
 #endif /* GET_CLIENT_INFO */
@@ -282,7 +282,7 @@ void deal_with_data(int listnum) /* Current item in connectlist for for loops */
 	if (rlen < 0) {
 		/* Connection closed, close this end and free up entry in connectlist */
 		printf("NB Server(tcp) - Connection lost: FD=%d; Slot=%d\n",
-			connectlist[listnum].fd,(listnum+1));
+			(int)connectlist[listnum].fd,(listnum+1));
 		SCLOSE(connectlist[listnum].fd);
 		connectlist[listnum].fd = 0; /* make slot available for the next */
 	} else if (rlen > 0) {
@@ -317,7 +317,7 @@ void deal_with_data(int listnum) /* Current item in connectlist for for loops */
 	} else {
         /* ASSUME Connection closed, close this end and free up entry in connectlist */
         printf("NB Server(tcp) - Received : 0! Assume connection lost: FD=%d; Slot=%d\n",
-            connectlist[listnum].fd,(listnum+1));
+            (int)(connectlist[listnum].fd),(listnum+1));
         SCLOSE(connectlist[listnum].fd);
         connectlist[listnum].fd = 0; /* make slot available for the next */
     }
@@ -474,7 +474,7 @@ int main (int argc, char *argv[])
         iret = 1;
         goto NB_Server_End;
 	}
-    printf("NB Server(tcp) - Got listen SOCKET 0x%X (%d)\n", sock, sock );
+    printf("NB Server(tcp) - Got listen SOCKET 0x%X (%d)\n", (int)sock, (int)sock );
 
 	/* So that we can re-bind to it without TIME_WAIT problems */
     setreuseaddr(sock);
@@ -580,7 +580,7 @@ Bad_Option2:
 
 NB_Server_End:
     if (!SERROR(sock)) {
-        printf("NB Server(tcp) - Closing socket %d\n", sock);
+        printf("NB Server(tcp) - Closing socket %d\n", (int)sock);
         SCLOSE(sock);
     }
 #ifdef _MSC_VER

@@ -276,7 +276,7 @@ Done_Send:
             if (VERB5) {
                 printf("Doing: rc = recvfrom(sd, bufptr, buflen, 0, (struct sockaddr *)serveraddr, &serveraddrlen);\n");
                 if (VERB9) {
-                    printf("Socket %d, buflen %d,  IP=%s, port %d\n", sd, buflen,
+                    printf("Socket %d, buflen %d,  IP=%s, port %d\n",(int)sd, buflen,
                         inet_ntoa(serveraddr->sin_addr),
                         ntohs(serveraddr->sin_port) );
                 }
@@ -508,7 +508,7 @@ Bad_Command:
     }
 
     printf("UDP Client - begin %s - socket() is OK! value 0x%X (%u)\n",
-        get_datetime_str(), sd, sd );
+        get_datetime_str(), (int)sd, (int)sd );
 
     /* set non blocking, if desired */
     if (no_blocking) {

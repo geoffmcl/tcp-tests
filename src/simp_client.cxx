@@ -391,7 +391,7 @@ int do_client_connect(void)
     highest = sockfd;
     sleep_secs = 0; // using 'select' so no sleep timeout
 #endif // TRY_USING_SELECT
-    printf("CLIENT: Got socket [%d]\n", sockfd);
+    printf("CLIENT: Got socket [%d]\n", (int)sockfd);
 
     while (not_connected)
     {
@@ -400,7 +400,7 @@ int do_client_connect(void)
             if ((cycle_count % 100) == 0) {
                 PERROR("ERROR: socket connect FAILED!");
                 printf("CLIENT: Will sleep for %d seconds, and try again with socket [%d] (%d)\n",
-                    secs_to_sleep, sockfd, cycle_count);
+                    secs_to_sleep, (int)sockfd, cycle_count);
             }
             cycle_count++;
             if (check_key_sleep(secs_to_sleep,modName)) {

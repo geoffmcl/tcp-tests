@@ -456,7 +456,7 @@ int run_server(SOCKET sockfd)
                 } else {
     		        // After accepting the connection, all transaction with this client would happen with the new socket descriptor - newsockfd.
                     printf("SERVER: accept connection to : %d (0x%X)\n",
-                        newsockfd, newsockfd );
+                        (int)newsockfd, (int)newsockfd );
 			        add_client(newsockfd,(struct sockaddr*)&cli_addr, clilen);
                 }
             } else {
@@ -493,7 +493,7 @@ int handle_receive(SOCKET newsockfd, PINCLIENT pic)
 	// Read from the socket...
     rd_buf[0] = 0;
     if (VERB9)
-        printf("SERVER: Read from socket : %d\n", newsockfd);
+        printf("SERVER: Read from socket : %d\n", (int)newsockfd);
 #ifdef _MSC_VER
 	int res = recv(newsockfd,rd_buf,MAXSTR,0);
     if (SERROR(res)) {
@@ -533,7 +533,7 @@ int handle_receive(SOCKET newsockfd, PINCLIENT pic)
         pic->last_read = time(0);
         if (VERB9) {
             clean_data(cleaned,rd_buf,res);
-            printf("SERVER: from client %d: [%s] %d\n", newsockfd, cleaned, res);
+            printf("SERVER: from client %d: [%s] %d\n", (int)newsockfd, cleaned, res);
         }
         if (do_echo) {
             rd_buf[res] = 0;
@@ -544,7 +544,7 @@ int handle_receive(SOCKET newsockfd, PINCLIENT pic)
             int elen = (int)strlen(rd_ack);
             if (VERB9) {
                 clean_data(cleaned,rd_ack,elen);
-                printf("SERVER: to   client %d: [%s] %d\n", newsockfd, cleaned, elen);
+                printf("SERVER: to   client %d: [%s] %d\n", (int)newsockfd, cleaned, elen);
             }
             res = send(newsockfd,rd_ack,elen,0);
             if (SERROR(res)) {
@@ -593,7 +593,7 @@ void process_clients(void)
                 char * IP = pic->IP;
                 printf("client: %d ", cnt );
                 printf("close %d, IP %s, due to %d rw errors\n",
-                    pic->sock, IP, pic->had_rw_error );
+                    (int)pic->sock, IP, pic->had_rw_error );
                 SCLOSE(pic->sock);
                 pic->sock = 0;
                 delete pic;
@@ -619,7 +619,7 @@ void clear_client_list(void)
         if (pic->sock && !SERROR(pic->sock)) {
             IP = pic->IP;
             printf( "C:%d: close %d, IP %s\n",
-                cnt, pic->sock, IP );
+                cnt, (int)pic->sock, IP );
             SCLOSE(pic->sock);
         }
         delete pic; /* delete allocation */
@@ -635,7 +635,7 @@ void add_client(SOCKET newsockfd, struct sockaddr* addr, int addrlen)
     vINi it;
     for ( it = vInClients.begin(); it != vInClients.end(); it++ ) {
         if ( (*it)->sock == newsockfd ) {
-            printf("SERVER: New socket : %d already in vector\n", newsockfd);
+            printf("SERVER: New socket : %d already in vector\n", (int)newsockfd);
             return;
         }
     }
@@ -663,14 +663,14 @@ void add_client(SOCKET newsockfd, struct sockaddr* addr, int addrlen)
     }
     
     printf("SERVER: New socket: %d, from IP %s, name %s\n",
-        newsockfd, pic->IP, pic->h_name );
+        (int)newsockfd, pic->IP, pic->h_name );
 
     if (add_nonblocking) {
         if (VERB9)
-            printf("SERVER: Adding non-blocking mode for %d\n", newsockfd );
+            printf("SERVER: Adding non-blocking mode for %d\n", (int)newsockfd );
         int status = setnonblocking(newsockfd);
         if (VERB9)
-            printf("SERVER: io ctrl socket(%d,...) returned %d\n", newsockfd, status);
+            printf("SERVER: io ctrl socket(%d,...) returned %d\n", (int)newsockfd, status);
     }
     total_clients++;
     vInClients.push_back(pic); // store new CLIENT
@@ -880,7 +880,7 @@ Bad_Arg:
     highest = sockfd;
     Hostname_len = sizeof(Hostname);
     printf("SERVER: Got socket %d (0x%X) %s",
-        sockfd, sockfd,
+        (int)sockfd, (int)sockfd,
         (socket_type == SOCK_STREAM ? "tcp" : "udp"));
 
     bzero((char *)&serv_addr,sizeof(serv_addr)) ;
@@ -916,7 +916,7 @@ Bad_Arg:
             printf("SERVER: Adding non-blocking mode...\n");
         status = setnonblocking(sockfd);
         if (VERB9)
-            printf("SERVER: io ctrl socket(%d,...) returned %d\n", sockfd, status );
+            printf("SERVER: io ctrl socket(%d,...) returned %d\n", (int)sockfd, status );
     }
 
     // get some more details of the server

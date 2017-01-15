@@ -72,7 +72,7 @@ int main()
     }
 
     printf("UDP wrecvr - IP %s, port %d, struct len %d\n", inet_ntoa(RecvAddr.sin_addr),
-        ntohs(RecvAddr.sin_port), sizeof (RecvAddr) );
+        ntohs(RecvAddr.sin_port), (int)sizeof(RecvAddr) );
 
     //-----------------------------------------------
     // Call the recvfrom function to receive datagrams

@@ -324,7 +324,7 @@ retry:
 	sa.sin_family = AF_INET;
 	sasize = sizeof(sa);
 	errno1 = 0;
-	if ((new_s = accept(listen_s, (struct sockaddr *)&sa, &sasize)) < 0) {
+	if ((new_s = (int)accept(listen_s, (struct sockaddr *)&sa, (int *)&sasize)) < 0) {
 		setErrnoNT();
 		errno1 = errno;
 		tcp_unlisten();
