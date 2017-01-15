@@ -35,7 +35,7 @@ if (WIN32 AND MSVC)
 else()
     ### list(APPEND EXTRA_LD_FLAGS -L.)
     set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-function")
-    set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-variable")
+    set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-variable -Wno-unused-but-set-variable")
 endif()
 
 # deal with config.h
