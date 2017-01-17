@@ -1,4 +1,5 @@
-// sim_server.cxx
+// simp_server.cxx
+// 20170116 - Add --echo on/off option
 // 2011-03-31 - Some (messy) experiments with SOCKETS
 //
 // Written by Geoff R. McLane, started March 2011.
@@ -384,6 +385,7 @@ void cmd_help(char * name)
     printf(" -?    = This help, and exit 0\n");;
     printf(" -h <host> = Set the HOST name, or IP. Def=<none>\n");
     printf(" -p <port> = Set the PORT number. Def=%d\n", PORTNUM );
+    printf(" -e on/off = Set server echo on or off. Def=%s\n", (do_echo ? "on" : "off"));
 #ifdef ADD_UDP_SUPPORT
     printf(" -u        = Use udp socket. Def=tcp\n");
 #endif // ADD_UDP_SUPPORT
@@ -769,12 +771,43 @@ int get_host_information(char * in_host_name)
     return 0; // success
 }
 
+int setboolopt(const char *sarg, int *pdo_echo)
+{
+    int iret = 1;   // assume error
+    size_t len = strlen(sarg);
+    if (strcmp(sarg, "yes") == 0) {
+        *pdo_echo = 1;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "no") == 0) {
+        *pdo_echo = 0;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "on") == 0) {
+        *pdo_echo = 1;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "off") == 0) {
+        *pdo_echo = 0;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "1") == 0) {
+        *pdo_echo = 1;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "0") == 0) {
+        *pdo_echo = 0;
+        iret = 0;   // all ok
+    }
+    return iret;
+}
+
 /* OS ENTRY */
 int main( int argc, char *argv[])
 {
     int iret = 0;
     int portNumber, i, c, status;
-    char * arg;
+    char * arg, *sarg;
     PINCLIENT pic = NULL;
     struct in_addr * pin = NULL;
     char * IP = NULL;
@@ -793,12 +826,14 @@ int main( int argc, char *argv[])
     for (i = 1; i < argc; i++) {
         arg = argv[i];
         if (*arg == '-') {
-            arg++;
-            while(*arg == '-') arg++;
-            c = *arg;
+            sarg = &arg[1];
+            while(*sarg == '-') sarg++;
+            c = *sarg;  // get first char
             switch (c) {
             case '?':
                 cmd_help(argv[0]);
+                printf("And when server running, the follow keys are active...\n");
+                show_help();
                 return 0;
                 break;
             case 'h':
@@ -806,6 +841,7 @@ int main( int argc, char *argv[])
                     i++;
                     strcpy(hostName,argv[i]);
                 } else {
+                    fprintf(stderr,"ERROR: Arg %s must be followed by a host name/ip!\n", arg);
                     goto Bad_Arg;
                 }
                 break;
@@ -814,6 +850,7 @@ int main( int argc, char *argv[])
                     i++;
                     portNumber = atoi(argv[i]);
                 } else {
+                    fprintf(stderr,"ERROR: Arg %s must be followed by a port number!\n", arg);
                     goto Bad_Arg;
                 }
                 break;
@@ -840,9 +877,26 @@ int main( int argc, char *argv[])
                 socket_type = SOCK_DGRAM;
                 break;
 #endif // ADD_UDP_SUPPORT
+            case 'e':
+                if ((i + 1) < argc) {
+                    i++;
+                    sarg = argv[i];
+                    if (setboolopt(sarg, &do_echo)) {
+                        fprintf(stderr,"ERROR: Arg %s must be followed by yes/no, on/off, 1/0! Not %s\n", arg, sarg);
+                        goto Bad_Arg;
+                    }
+                    if (VERB1)
+                        printf("SEERVER: Set 'echo' %s\n", (do_echo ? "on" : "off"));
+                }
+                else {
+                    fprintf(stderr,"ERROR: Arg %s must be followed by yes/no, on/off, 1/0!!\n", arg);
+                    goto Bad_Arg;
+                }
+                break;
+
             default:
 Bad_Arg:
-                fprintf(stderr,"ERROR: Invalid command line! arg [%s] unknown\n", argv[i] );
+                fprintf(stderr,"ERROR: Invalid command line! arg [%s] failed/unknown\n", arg );
                 return 1;
                 break;
             }
