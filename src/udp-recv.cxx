@@ -124,6 +124,42 @@ int check_key(void)
     return 0;
 }
 
+#ifndef DEF_MESSAGE_LOG
+#define DEF_MESSAGE_LOG "temp-udprecv.log"
+#endif 
+
+static char log_msg[1024];
+static const char *msg_log = DEF_MESSAGE_LOG;
+static FILE *msg_file = NULL;
+
+static void write_msg_log(const char *msg, int len)
+{
+    int wtn;
+    if (msg_file == NULL) {
+        msg_file = fopen(msg_log, "ab");
+        if (msg_file) {
+            char *cp = log_msg;
+            sprintf(cp, "%s: OPEN/append %s log file %s\n", module, msg_log, get_datetime_str());
+            wtn = (int)fwrite(cp, 1, strlen(cp), msg_file);
+            if (wtn != (int)strlen(cp)) {
+                fclose(msg_file);
+                msg_file = (FILE *)-1;
+                printf("ERROR: Failed to WRITE %d != %d to %s log file!\n", wtn, len, msg_log);
+            }
+        } else {
+            printf("%s:ERROR: Failed to OPEN/append %s log file!\n", module, msg_log);
+            msg_file = (FILE *)-1;
+        }
+    }
+    if (msg_file && (msg_file != (FILE *)-1)) {
+        wtn = (int)fwrite(msg, 1, len, msg_file);
+        if (wtn != len) {
+            fclose(msg_file);
+            msg_file = (FILE *)-1;
+            printf("ERROR: Failed to WRITE %d != %d to %s log file!\n", wtn, len, msg_log);
+        }
+    }
+}
 
 int do_test()
 {
@@ -143,17 +179,17 @@ int do_test()
     /* get a socket descriptor */
     SOCKET sd = socket(AF_INET, SOCK_DGRAM, 0);
     if (SERROR(sd)) {
-        PERROR("UDP Client - socket() error");
+        PERROR("udp-recv: socket() error");
         iret = 1;
         goto Exit;
     }
-    printf("UDP Client - begin %s - socket() is OK! value 0x%X (%u)\n",
+    printf("%s: begin %s - socket() is OK! value 0x%X (%u)\n", module,
         get_datetime_str(), (unsigned int)sd, (unsigned int)sd);
 
     /* set non blocking, if desired */
     if (no_blocking) {
         status = setnonblocking(sd);
-        printf("UDP Client - set non-blocking - status = %d\n", status);
+        printf("%s: set non-blocking - status = %d\n", module, status);
     }
     if (add_bind)
     {
@@ -172,38 +208,42 @@ int do_test()
 
         status = bind(sd, (SOCKADDR *)& RecvAddr, sizeof(RecvAddr));
         if (status != 0) {
-            PERROR("UDP Client - bind failed!\n");
+            PERROR("udp-recv: bind failed!\n");
             return 1;
         }
 
-        printf("UDP Client - IP %s, port %d, struct len %d\n", inet_ntoa(RecvAddr.sin_addr),
+        printf("%s: bound IP %s, port %d, struct len %d\n", module, inet_ntoa(RecvAddr.sin_addr),
             ntohs(RecvAddr.sin_port), (int) sizeof(RecvAddr));
 
     }
+
+    printf("%s: Any key to exit loop...\n", module);
     
     while (wait_recv) 
     {
-
+        // non-blocking 'recvfrom' ...
         status = recvfrom(sd, bufptr, buflen, 0, (struct sockaddr *)serveraddr, &serveraddrlen);
         if (SERROR(status))
         {
 #ifdef _MSC_VER
             int err = WSAGetLastError();
             if (err == WSAEWOULDBLOCK) {
-                if (check_key_sleep_ms(m_delay_time,(char *)module))
+                if (check_key_sleep_ms(m_delay_time, (char *)module)) {
+                    printf("%s: Got a keyboard input... going to exit...\n", module);
                     break;
+                }
                 // clock_wait(m_delay_time);
                 waited_ms += (double)m_delay_time;
                 if ((int)(waited_ms / 1000.0) >= show_time_secs) {
                     total_wait_secs += (waited_ms / 1000.0);
                     waited_ms = 0.0;
-                    printf("UDP Client - Waited %lf secs... any key to exit...\n", total_wait_secs);
+                    printf("%s: Waited %lf secs... any key to exit...\n", module, total_wait_secs);
                 }
                 continue;
             }
             else {
                 if (err == WSAEINVAL) {
-                    PERROR("UDP Client - recvfrom() error");
+                    PERROR("udp-recv: recvfrom() error");
                     iret = 1;
                     break;
                 }
@@ -211,25 +251,36 @@ int do_test()
 #else
 
             if (errno == EAGAIN) {
-                if (check_key_sleep_ms(m_delay_time, (char *)module))
+                if (check_key_sleep_ms(m_delay_time, (char *)module)) {
+                    printf("%s: Got a keyboard input... going to exit...\n", module);
                     break;
+                }
                 // clock_wait(m_delay_time);
                 continue;
             }
             else {
-                PERROR("UDP Client - recvfrom() error");
+                PERROR("udp-recv: recvfrom() error");
                 iret = 1;
                 break;
-        }
+            }
 #endif
         }
+        else if (status > 0) {
+            write_msg_log(bufptr, status);  // write data to a log file
+        }
+        else if (status == 0) {
+            // doc says this is a graceful close, but this is udp, non-blocking,
+            // so I guess this **NEVER** happens!!!
+
+        }
+           
     }
 
 
 
 Exit:
     /* close() the socket descriptor. */
-    printf("UDP Client - close and exit %d... %s\n", iret, get_datetime_str());
+    printf("%s: close and exit %d... %s\n", module, iret, get_datetime_str());
     if (sd && !SERROR(sd))
         SCLOSE(sd);
 
