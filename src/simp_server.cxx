@@ -4,7 +4,7 @@
 //
 // Written by Geoff R. McLane, started March 2011.
 //
-// Copyright (C) 2011 - ????  Geoff R. McLane  - http://geoffair.org
+// Copyright (C) 2011 - onwards  Geoff R. McLane  - http://geoffair.org
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -86,7 +86,7 @@
    For BOTH -
    TCP / SOCK_STREAM / recv - AND 
    UDP / SOCK_DGRAM / recvfrom
-   if (rc == 0) cerr << "ERROR! Socket closed" << endl;
+   if (rc == 0) cerr << "ERROR! Socket closed" << std::endl;
 
    Also implies the 'difference' between 'recv' and 'read' is
    " read(): read a specific number of bytes from a file descriptor
@@ -138,14 +138,14 @@
 #include "simp_common.hxx" // common to SERVER and CLIENT
 #include "winsockerr.cxx"
 
-using namespace std;
+// using namespace std; // causes "printf" to be ambiguous
 
 #define KEEP_CYCLE_COUNT // get some idea of 'cycle per second'
 #undef ADD_UDP_SUPPORT
 
 #define DEF_BACKLOG 5   /* this should be enough PENDING connections */
 
-typedef vector<PINCLIENT> vIN;
+typedef std::vector<PINCLIENT> vIN;
 typedef vIN::iterator vINi;
 
 static vIN vInClients; /* vector LIST of CLIENTS */
@@ -272,22 +272,22 @@ void show_stats(void)
 #define OUT_SS(a) printf("%s", a.str().c_str()); a.str("")
 void show_help(void)
 {
-    ostringstream ss;
+    std::ostringstream ss;
     char * cp = get_to_stg();
-    ss << "HELP on keys" << endl;
-    ss << " ?     = This help..." << endl;
+    ss << "HELP on keys" << std::endl;
+    ss << " ?     = This help..." << std::endl;
     ss << " e     = Toggle ECHO. Currently " <<
-        (do_echo ? "On" : "OFF") << endl;
+        (do_echo ? "On" : "OFF") << std::endl;
     ss << " p     = Toggle PAUSE. Currently " <<
-        (is_paused ? "On" : "OFF") << endl;
-    ss << " s     = Show STATS." << endl;
-    ss << " 01259 = Set verbosity level. Now=" << verbosity << endl;
-    ss << "ESC    = EXIT application..." << endl;
-    ss << "STATS - info:" << endl;
-    ss << "Current timeout = " << cp << endl;
+        (is_paused ? "On" : "OFF") << std::endl;
+    ss << " s     = Show STATS." << std::endl;
+    ss << " 01259 = Set verbosity level. Now=" << verbosity << std::endl;
+    ss << "ESC    = EXIT application..." << std::endl;
+    ss << "STATS - info:" << std::endl;
+    ss << "Current timeout = " << cp << std::endl;
 #ifdef KEEP_CYCLE_COUNT // get some idea of 'cycle per second'
     if (cyc_per_sec > 0)
-        ss << "Running at " << cyc_per_sec << " cycles per second." << endl;
+        ss << "Running at " << cyc_per_sec << " cycles per second." << std::endl;
 #endif
     OUT_SS(ss);
     if (sends_done || recvs_done) {
@@ -826,9 +826,13 @@ int main( int argc, char *argv[])
     for (i = 1; i < argc; i++) {
         arg = argv[i];
         if (*arg == '-') {
-            sarg = &arg[1];
+            sarg = &arg[1]; // all commands beginning with '-'
             while(*sarg == '-') sarg++;
             c = *sarg;  // get first char
+            if (strcmp(sarg, "help") == 0)
+                c = '?';
+            else if (strcmp(sarg, "version") == 0)
+                c = '?';
             switch (c) {
             case '?':
                 cmd_help(argv[0]);
@@ -901,6 +905,7 @@ Bad_Arg:
                 break;
             }
         } else {
+            // bare argument - none at present
             fprintf(stderr,"ERROR: Invalid command line! bare arg [%s] unknown\n", argv[i] );
             return 1;
         }
