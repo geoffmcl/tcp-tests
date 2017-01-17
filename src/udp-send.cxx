@@ -54,11 +54,12 @@ int parse_args( int argc, char **argv )
             usr_input = strdup(arg);
         }
     }
-    if (!usr_input) {
-        printf("%s: No user input found in command!\n", module);
-        return 1;
-    }
-    return 0;
+    //if (!usr_input) {
+    //    printf("%s: No user input found in command!\n", module);
+    //    return 1;
+    //}
+    printf("%s: App not completed! Is a WIP only!\n", module);
+    return 1;
 }
 
 // main() OS entry
