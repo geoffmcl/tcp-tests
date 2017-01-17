@@ -12,4 +12,6 @@ config.h
 x64/*
 .vs
 *.sln
-
+*.log
+*.csv
+*.VC.db
