@@ -1,4 +1,5 @@
 // simp_server.cxx
+// 20170119 - Add output log change - for all data recevied...
 // 20170116 - Add --echo on/off option
 // 2011-03-31 - Some (messy) experiments with SOCKETS
 //
@@ -390,6 +391,7 @@ void cmd_help(char * name)
     printf(" -u        = Use udp socket. Def=tcp\n");
 #endif // ADD_UDP_SUPPORT
     printf(" -v[nn]    = Increment/Set verbosity. Def=%d\n", verbosity );
+    printf(" -l <file> = Set data received log. Def=%s\n", msg_log);
     printf("Current timeout = %s\n", cp);
 }
 
@@ -894,6 +896,18 @@ int main( int argc, char *argv[])
                 }
                 else {
                     fprintf(stderr,"ERROR: Arg %s must be followed by yes/no, on/off, 1/0!!\n", arg);
+                    goto Bad_Arg;
+                }
+                break;
+            case 'l':
+                if ((i + 1) < argc) {
+                    i++;
+                    msg_log = strdup(argv[i]);
+                    if (VERB1)
+                        printf("SEERVER: Set message log to '%s'\n", msg_log);
+                }
+                else {
+                    fprintf(stderr, "ERROR: Arg %s must be followed by a file name!\n", arg);
                     goto Bad_Arg;
                 }
                 break;
