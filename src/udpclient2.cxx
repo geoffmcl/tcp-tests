@@ -32,6 +32,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // $Id$
+// 20170120 - Add 'forever' loop, with 10 secs sleep between next send
+//
 
 #include "config.h" /* always the FIRST include */
 #if (defined(_MSC_VER) && !defined(_CONFIG_H_MSVC_))
@@ -53,6 +55,12 @@
 #include "sockhelp.c"
 
 #define MY_DEF_COUNT 10
+
+#ifndef DEF_UDPC2_SLEEP_SECS
+#define DEF_UDPC2_SLEEP_SECS 10
+#endif
+
+static int sleep_secs = DEF_UDPC2_SLEEP_SECS;
 
 //////////////////////////////////////////////////////////////////////////////
 //// dummy - seems gcc adds static functions, whether they are used or not,
@@ -81,6 +89,7 @@ int main(int argc, char *argv[])
     struct in_addr *addr = NULL; /* Internet address of server */
     char *err; /* Used to test for valid integer value */
     int i, c, status;
+    int running = 1;
 
     printf("UDP Client2 - compiled on %s, at %s\n", __DATE__, __TIME__);
     for (i = 1; i < argc; i++)
@@ -138,12 +147,13 @@ Bad_Arg:
                 fprintf(stderr,"ERROR: %s is not a valid integer number.\n",argv[i]);
                 exit(EXIT_FAILURE);
             }
+            printf("UDP Client2 - Set increment to value %d\n", inc_amount);
         }
     }
 
     if (inc_amount == 0) {
         inc_amount = MY_DEF_COUNT;
-        printf("UDP Client2 - No increment given. Using default %d\n", inc_amount);
+        printf("UDP Client2 - No increment given. Using default value %d\n", inc_amount);
     }
     inc_amount = htonl(inc_amount); // to network order
     if (port == 0) {
@@ -199,39 +209,48 @@ Bad_Arg:
         exit(EXIT_FAILURE);
     }
 
-    /* Send request for increment to server.  Note that all amounts are
-     transmitted in network byte order, so that the client and server
-     can run on different architectures. */
-    status = sendto(sock, (char *)&inc_amount, sizeof(inc_amount), 0,
-        (struct sockaddr *) &server, sizeof(server));
-    if (SERROR(status)) {
-        PERROR("ERROR: sendto() FAILED!");
-        SCLOSE(sock);
-        sock_end();
-        exit(EXIT_FAILURE);
-    }
-    printf("UDP Client2 - Sent %d bytes. (%d). Await reply...\n",
-        status, (int)sizeof(inc_amount) );
+    while (running)
+    {
 
-    /* Then wait for new total amount. */
-    structlength = sizeof(client);
-    recvd = recvfrom(sock, (char *)&total, sizeof(total), 0,
-        (struct sockaddr *) &client, &structlength);
-    if (SERROR(recvd)) {
-        PERROR("ERROR: recvfrom() FAILED!");
-        SCLOSE(sock);
-        sock_end();
-        exit(EXIT_FAILURE);
-    }
-    if (recvd != sizeof(total)) {
-        fprintf(stderr,"Got back wrong number of bytes!\n");
-        SCLOSE(sock);
-        sock_end();
-        exit(EXIT_FAILURE);
+        /* Send request for increment to server.  Note that all amounts are
+         transmitted in network byte order, so that the client and server
+         can run on different architectures. */
+        printf("Sending increment %d (%x)\n", (int)inc_amount, (int)inc_amount);
+
+        status = sendto(sock, (char *)&inc_amount, sizeof(inc_amount), 0,
+            (struct sockaddr *) &server, sizeof(server));
+        if (SERROR(status)) {
+            PERROR("ERROR: sendto() FAILED!");
+            SCLOSE(sock);
+            sock_end();
+            exit(EXIT_FAILURE);
+        }
+        printf("UDP Client2 - Sent %d bytes. (%d). Await reply...\n",
+            status, (int)sizeof(inc_amount) );
+
+        /* Then wait for new total amount. */
+        structlength = sizeof(client);
+        recvd = recvfrom(sock, (char *)&total, sizeof(total), 0,
+            (struct sockaddr *) &client, &structlength);
+        if (SERROR(recvd)) {
+            PERROR("ERROR: recvfrom() FAILED!");
+            SCLOSE(sock);
+            sock_end();
+            exit(EXIT_FAILURE);
+        }
+        if (recvd != sizeof(total)) {
+            fprintf(stderr,"Got back wrong number of bytes!\n");
+            SCLOSE(sock);
+            sock_end();
+            exit(EXIT_FAILURE);
+        }
+
+        total = ntohl(total); /* from network order to local order */
+        printf("UDP Client2 - Current count: %d, sleep %d, looping forever...\n",total, sleep_secs);
+        sleep(sleep_secs);
     }
 
-    total = ntohl(total); /* from network order to local order */
-    printf("UDP Client2 - Current count: %i. Closing client...\n",total);
+    printf("UDP Client2 - Closing client... sock %d\n", (int)sock);
     SCLOSE(sock);
     sock_end();
     return 0;
