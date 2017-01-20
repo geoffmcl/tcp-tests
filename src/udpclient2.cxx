@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
                         i--;
                         goto Bad_Arg;
                     }
+                    printf("UDP Client2 - Set port value to %d\n", port);
                 } else {
                     i--;
                     fprintf(stderr,"ERROR: Need additional argument\n");
@@ -185,6 +186,7 @@ Bad_Arg:
         exit(EXIT_FAILURE);
     }
 
+    printf("UDP Client2 - Created server socket %d\n", (int)sock);
     /* We need two sockaddr_in structures here.  One is bound to the socket
      we want to talk on, and the other is used to indicate who we want to
      talk to. */
@@ -215,7 +217,8 @@ Bad_Arg:
         /* Send request for increment to server.  Note that all amounts are
          transmitted in network byte order, so that the client and server
          can run on different architectures. */
-        printf("Sending increment %d (%x)\n", (int)inc_amount, (int)inc_amount);
+        printf("Sending increment %d (%x), length %d\n", (int)ntohs(inc_amount), (int)inc_amount,
+            (int)sizeof(inc_amount));
 
         status = sendto(sock, (char *)&inc_amount, sizeof(inc_amount), 0,
             (struct sockaddr *) &server, sizeof(server));
