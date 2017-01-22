@@ -45,7 +45,8 @@ extern int sock_gets(SOCKET sockfd, char *str, size_t count );
 extern int sock_puts(SOCKET sockfd, char *str );
 void ignore_pipe(void);
 
-#define MY_DEF_PORT 5050
+// 20170122 - Change to DEFUALT 5055 - Seems 5050 is already USED by something 
+#define MY_DEF_PORT 5055
 
 #endif
 // eof - sockhelp.h
