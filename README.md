@@ -1,4 +1,4 @@
-# tcp-tests project
+# tcp-tests projects - 20170122 20151231
 
 This is just a collection of sockets code, tcp and udp, most cross-platform, with no particular purpose other than serve as a tcp/ip example code source, gathered from many sources over the years.
 
@@ -25,28 +25,37 @@ Of course the options include setting the generator, if you do not want the defa
 
 ## Projects
 
-They are in random order... and most work to show something...
+They are more or less in alphabetic order... and most work to show something...
 
 #### Crossported WIN32/UNIX
 
+    - ebsocket.c ebsocket.h
     - nbclient.cxx
     - nbserver.cxx
+    - simp_client.cxx
+    - simp_server.cxx simp_common.hxx
+    - udpclient.cxx
+    - udpclient2.cxx
+    - udp-recv.cxx
+    - udp-send.cxx
+    - udpserver.cxx
+    - udpserver2.cxx
     - unix_client.cxx
     - unix_server.cxx
-    - ebsocket.c ebsocket.h
-    - httpget.cxx - not working!
     
 #### Windows Only
 
-    - udpclient.cxx
-    - udpserver.cxx
-    - udpclient2.cxx
-    - udpserver2.cxx
-    - simp_client.cxx
-    - simp_server.cxx simp_common.hxx
+    - getlocalip.cpp
+    - udp-wrecv.cxx
+    - udp-wsend.cxx
     - recvfrom.cxx
     - sendto.cxx
+    - WSAenum.cxx
 
+#### Not working
+
+    - httpget.cxx - not working!
+    
 ### More Details
     
 ##### nbclient/nbserver
@@ -123,8 +132,6 @@ This was to do a simple GET to http://crossfeed.fgx.ch, and shows the json recei
 Have FUN!
 
 Geoff.  
-20151231
-
+20170122
 
 ; eof
-
