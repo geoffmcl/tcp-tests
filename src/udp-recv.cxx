@@ -37,9 +37,21 @@ static const char *module = "udp-recv";
 
 static int no_blocking = 1;
 static int add_bind = 1;
-
+static int write_msg_header = 0;    // maybe not such a good idea!
+static int echo_received_data = 1;  // echo back all received data
+static int append_to_log = 0;
 static unsigned short Port = 5556; // 27015;
 static const char *Host = 0;    // use INADDR_ANY if none
+
+#ifndef DEF_MESSAGE_LOG
+#define DEF_MESSAGE_LOG "temp-udprecv.log"
+#endif 
+
+static char log_msg[1024];
+static const char *msg_log = DEF_MESSAGE_LOG;
+static FILE *msg_file = NULL;
+static const char *def_txt = "The quick brown fox jumps over the lazy dog!\n";
+
 
 void give_help( char *name )
 {
@@ -48,12 +60,48 @@ void give_help( char *name )
     printf(" --help  (-h or -?) = This help and exit(0)\n");
     printf(" --Host IP     (-H) = Set host IP address for bind.\n");
     printf("   Default is INADDR_ANY (0.0.0.0)\n");
-    printf(" --Port val    (-P) = Set port number to bind to. (def=%d)", Port);
+    printf(" --Port val    (-P) = Set port number to bind to. (def=%d)\n", Port);
+    printf(" --echo yes|no (-e) = Enable/Disable echo of received. (def=%s)\n",
+        (echo_received_data ? "yes" : "no"));
+    printf(" --log <file>  (-l) = Set data received log. (def=%s)\n", msg_log);
+    printf(" --append      (-a) = Set to append to log. (def=%s)\n", (append_to_log ? "yes" : "no"));
 
     // TODO: More help
 }
 
-int parse_args( int argc, char **argv )
+static int setboolopt(const char *sarg, int *pdo_echo)
+{
+    int iret = 1;   // assume error
+    size_t len = strlen(sarg);
+    if (strcmp(sarg, "yes") == 0) {
+        *pdo_echo = 1;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "no") == 0) {
+        *pdo_echo = 0;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "on") == 0) {
+        *pdo_echo = 1;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "off") == 0) {
+        *pdo_echo = 0;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "1") == 0) {
+        *pdo_echo = 1;
+        iret = 0;   // all ok
+    }
+    else if (strcmp(sarg, "0") == 0) {
+        *pdo_echo = 0;
+        iret = 0;   // all ok
+    }
+    return iret;
+}
+
+
+static int parse_args( int argc, char **argv )
 {
     int i,i2,c;
     char *arg, *sarg;
@@ -94,6 +142,38 @@ int parse_args( int argc, char **argv )
                     return 1;
                 }
                 break;
+            case 'e':
+                if (i2 < argc) {
+                    i++;
+                    sarg = argv[i];
+                    if (setboolopt(sarg, &echo_received_data)) {
+                        fprintf(stderr, "ERROR: Arg %s must be followed by yes/no, on/off, 1/0! Not %s\n", arg, sarg);
+                        return 1;
+                    }
+                    //if (VERB1)
+                        printf("%s: Set 'echo' %s\n", module, (echo_received_data ? "on" : "off"));
+                }
+                else {
+                    fprintf(stderr, "ERROR: Arg %s must be followed by yes/no, on/off, 1/0!!\n", arg);
+                    return 1;
+                }
+                break;
+            case 'l':
+                if (i2 < argc) {
+                    i++;
+                    msg_log = strdup(argv[i]);
+                    //if (VERB1)
+                        printf("%s: Set message log to '%s'\n", module, msg_log);
+                }
+                else {
+                    fprintf(stderr, "ERROR: Arg %s must be followed by a file name!\n", arg);
+                    return 1;
+                }
+                break;
+            case 'a':
+                append_to_log = 1;
+                printf("%s: Set to append to message log...\n", module);
+                break;
             default:
                 printf("%s: Unknown argument '%s'. Try -? for help...\n", module, arg);
                 return 1;
@@ -124,27 +204,27 @@ int check_key(void)
     return 0;
 }
 
-#ifndef DEF_MESSAGE_LOG
-#define DEF_MESSAGE_LOG "temp-udprecv.log"
-#endif 
-
-static char log_msg[1024];
-static const char *msg_log = DEF_MESSAGE_LOG;
-static FILE *msg_file = NULL;
-
 static void write_msg_log(const char *msg, int len)
 {
     int wtn;
     if (msg_file == NULL) {
-        msg_file = fopen(msg_log, "ab");
+        const char *mode = "wb";
+        if (append_to_log)
+            mode = "ab";
+        msg_file = fopen(msg_log, mode);
         if (msg_file) {
             char *cp = log_msg;
-            sprintf(cp, "%s: OPEN/append %s log file %s\n", module, msg_log, get_datetime_str());
-            wtn = (int)fwrite(cp, 1, strlen(cp), msg_file);
-            if (wtn != (int)strlen(cp)) {
-                fclose(msg_file);
-                msg_file = (FILE *)-1;
-                printf("ERROR: Failed to WRITE %d != %d to %s log file!\n", wtn, len, msg_log);
+            sprintf(cp, "%s: %s %s log file %s\n", module, (append_to_log ? "append to" : "open"), msg_log, get_datetime_str());
+            if (write_msg_header) {
+                wtn = (int)fwrite(cp, 1, strlen(cp), msg_file);
+                if (wtn != (int)strlen(cp)) {
+                    fclose(msg_file);
+                    msg_file = (FILE *)-1;
+                    printf("%s:ERROR: Failed to WRITE %d != %d to %s log file!\n", module, wtn, len, msg_log);
+                }
+            }
+            if (msg_file && (msg_file != (FILE *)-1)) {
+                printf("%s", cp);
             }
         } else {
             printf("%s:ERROR: Failed to OPEN/append %s log file!\n", module, msg_log);
@@ -156,9 +236,23 @@ static void write_msg_log(const char *msg, int len)
         if (wtn != len) {
             fclose(msg_file);
             msg_file = (FILE *)-1;
-            printf("ERROR: Failed to WRITE %d != %d to %s log file!\n", wtn, len, msg_log);
+            printf("%s:ERROR: Failed to WRITE %d != %d to %s log file!\n", module, wtn, len, msg_log);
         }
     }
+}
+
+#define MX_H_BUF 256
+
+// htons(client->sin_port), // converts a u_short from host to
+// TCP/IP network byte order (which is big-endian).
+static void show_client(char * src, int recvd, struct sockaddr_in * client)
+{
+    //static char _s_buf[MX_H_BUF];
+    // ntohs(u_short) - converts a u_short from TCP/IP network byte order
+    // to host byte order (which is little-endian on Intel processors).
+    u_short port = ntohs(client->sin_port);
+    char * IP = inet_ntoa(client->sin_addr);
+    printf("%s: Recevied %d bytes, from IP %s:%d\n", module, recvd, IP, port);
 }
 
 int do_test()
@@ -173,8 +267,8 @@ int do_test()
     int buflen = MX_UDP_MSG;
     struct sockaddr_in * serveraddr = &svr;
     socklen_t serveraddrlen = (socklen_t)sizeof(struct sockaddr_in);
-
-    int status, iret = 0;
+    int sflags = 0;
+    int status, len, iret = 0;
     /* The socket() function returns a socket */
     /* get a socket descriptor */
     SOCKET sd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -266,17 +360,29 @@ int do_test()
 #endif
         }
         else if (status > 0) {
-            write_msg_log(bufptr, status);  // write data to a log file
+            len = status;
+            write_msg_log(bufptr, len);  // write data, for length, to a log file
+            show_client(bufptr, status, serveraddr);
+            if (echo_received_data) {
+                status = sendto(sd, bufptr, len, sflags, (const struct sockaddr *)serveraddr, serveraddrlen);
+                if (SERROR(status)) {
+                    PERROR("udp-recv: sendto failed!\n");
+                    wait_recv = 0;  // exit this loop
+                }
+                else if (status != len) {
+                    printf("%s: Send %d !- %d - warning...\n", module, len, status);
+                }
+                else {
+                    printf("%s: Echoed %d back to client...\n", module, len);
+                }
+            }
         }
         else if (status == 0) {
             // doc says this is a graceful close, but this is udp, non-blocking,
             // so I guess this **NEVER** happens!!!
-
+            printf("%s: status == 0! This **NEVER** happens!\n", module);
         }
-           
     }
-
-
 
 Exit:
     /* close() the socket descriptor. */
