@@ -5,8 +5,10 @@
 /* common includes */
 #include <stdio.h>
 
+#ifdef _MSC_VER
+#include <Winsock2.h>
+#else // !_MSC_VER
 /* includes if NOT windows */
-#ifndef _MSC_VER
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
