@@ -892,7 +892,7 @@ int main( int argc, char *argv[])
                         goto Bad_Arg;
                     }
                     if (VERB1)
-                        printf("SEERVER: Set 'echo' %s\n", (do_echo ? "on" : "off"));
+                        printf("SERVER: Set 'echo' %s\n", (do_echo ? "on" : "off"));
                 }
                 else {
                     fprintf(stderr,"ERROR: Arg %s must be followed by yes/no, on/off, 1/0!!\n", arg);
@@ -904,7 +904,7 @@ int main( int argc, char *argv[])
                     i++;
                     msg_log = strdup(argv[i]);
                     if (VERB1)
-                        printf("SEERVER: Set message log to '%s'\n", msg_log);
+                        printf("SERVER: Set message log to '%s'\n", msg_log);
                 }
                 else {
                     fprintf(stderr, "ERROR: Arg %s must be followed by a file name!\n", arg);
