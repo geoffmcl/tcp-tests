@@ -16,6 +16,12 @@ static const char *module = "udp-send";
 
 static const char *usr_input = 0;
 
+///////////////////////
+//// dummy - seems gcc adds static functions, whether they are used or not,
+//// and this is needed for static check_key_sleep(...) not used here.
+int check_key() { return 0; }
+////////////////////////
+
 void give_help( char *name )
 {
     printf("%s: usage: [options] usr_input\n", module);
