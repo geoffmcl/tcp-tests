@@ -192,5 +192,17 @@ if (MSVC)
     # no install of these local only test/experimental applications
     
 endif ()
+if (WIN32)
+    # simple app - show TCP table
+    set(name GetTcpTable)
+    set(dir src)
+    set(${name}_SRCS ${dir}/${name}.cxx)
+    add_executable( ${name} ${${name}_SRCS} )
+    target_link_libraries( ${name} ${add_LIBS} )
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif()
+    # no install of these local only test/experimental applications
+endif ()
 
 # eof
