@@ -38,7 +38,7 @@ static const char *module = "udp-recv";
 static int no_blocking = 1;
 static int add_bind = 1;
 static int write_msg_header = 0;    // maybe not such a good idea!
-static int echo_received_data = 1;  // echo back all received data
+static int echo_received_data = 0;  // echo back all received data
 static int append_to_log = 0;
 static unsigned short Port = 5556; // 27015;
 static const char *Host = 0;    // use INADDR_ANY if none
@@ -193,7 +193,7 @@ static int parse_args( int argc, char **argv )
 /* Server's port number */
 #define SERVPORT 3333
 
-#define MX_UDP_MSG 512
+#define MX_UDP_MSG 2048   // was a mean 512
 
 int check_key(void)
 {
@@ -257,7 +257,7 @@ static void show_client(char * src, int recvd, struct sockaddr_in * client)
 
 int do_test()
 {
-    static char buffer[MX_UDP_MSG];
+    static char buffer[MX_UDP_MSG+4];
     int wait_recv = 1;
     double waited_ms = 0.0;
     double total_wait_secs = 0.0;
