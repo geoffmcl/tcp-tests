@@ -1,6 +1,6 @@
 *.vcxproj
 *.filters
-*.users
+*.user
 CMakeCache.txt
 CMakeFiles/*
 Debug/*
@@ -15,3 +15,4 @@ x64/*
 *.log
 *.csv
 *.VC.db
+*.opendb
