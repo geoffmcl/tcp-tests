@@ -1,5 +1,5 @@
 // simp_server.cxx
-// 20170119 - Add output log change - for all data recevied...
+// 20170119 - Add output log change - for all data received...
 // 20170116 - Add --echo on/off option
 // 2011-03-31 - Some (messy) experiments with SOCKETS
 //

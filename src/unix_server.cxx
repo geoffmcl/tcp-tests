@@ -362,7 +362,7 @@ int main (int argc, char *argv[])
                   }
 
                   /**********************************************/
-                  /* Data was recevied                          */
+                  /* Data was received                          */
                   /**********************************************/
                   len = rc;
                   printf("  %d bytes received\n", len);

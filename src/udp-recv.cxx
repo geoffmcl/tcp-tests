@@ -252,7 +252,7 @@ static void show_client(char * src, int recvd, struct sockaddr_in * client)
     // to host byte order (which is little-endian on Intel processors).
     u_short port = ntohs(client->sin_port);
     char * IP = inet_ntoa(client->sin_addr);
-    printf("%s: Recevied %d bytes, from IP %s:%d\n", module, recvd, IP, port);
+    printf("%s: Received %d bytes, from IP %s:%d\n", module, recvd, IP, port);
 }
 
 int do_test()
