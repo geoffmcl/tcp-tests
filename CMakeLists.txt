@@ -105,6 +105,7 @@ ADD_EXE( nbserver src/nbserver.cxx "${add_LIBS}" )
 ADD_EXE( nbclient src/nbclient.cxx "${add_LIBS}" )
 
 # no install of these local only test/experimental applications
+# NOTE:  winsockerr.cxx is directly included in several modules
 
 # 20151231 - copied from edbrowse project
 set(name ebsocket)
@@ -195,6 +196,15 @@ endif ()
 if (WIN32)
     # simple app - show TCP table
     set(name GetTcpTable)
+    set(dir src)
+    set(${name}_SRCS ${dir}/${name}.cxx)
+    add_executable( ${name} ${${name}_SRCS} )
+    target_link_libraries( ${name} ${add_LIBS} )
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif()
+    # simple app - show  WSAGetLastError(); string
+    set(name WSAError)
     set(dir src)
     set(${name}_SRCS ${dir}/${name}.cxx)
     add_executable( ${name} ${${name}_SRCS} )
