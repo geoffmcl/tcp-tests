@@ -81,12 +81,85 @@ typedef int SOCKET;
 /* ================================ */
 #endif /* _MSC_VER y/n */
 
-
-
-#define SERVER_PORT  3333
+#define DEF_SERVER_PORT  3333
 
 #define TRUE             1
 #define FALSE            0
+
+static const char* module = "unix_server";
+
+static unsigned short server_port = DEF_SERVER_PORT;
+
+void give_help(char* name)
+{
+    printf("%s: usage: [options]\n", module);
+    printf("Options:\n");
+    printf(" --help  (-h or -?) = This help and exit(0)\n");
+    //printf(" --ip <address> (i) = Set server ip address. (def=%s)\n", server_ip);
+    printf(" --port <port) (-p) = Set server port. (def=%u)\n", server_port);
+    //printf("\n");
+    //printf(" Create a 'socket', connect to server on IP:port, and offer to send\n");
+    //printf(" messages to the server... simple...\n");
+}
+
+int parse_args(int argc, char** argv)
+{
+    int i, i2, c;
+    char* arg, * sarg;
+    for (i = 1; i < argc; i++) {
+        arg = argv[i];
+        i2 = i + 1;
+        if (*arg == '-') {
+            sarg = &arg[1];
+            while (*sarg == '-')
+                sarg++;
+            c = *sarg;
+            switch (c) {
+            case 'h':
+            case '?':
+                give_help(argv[0]);
+                return 2;
+                break;
+#if 0  // 00000000000000000000000000000000000000000000000000000000000000000000
+            case 'i':
+                if (i2 < argc) {
+                    i++;
+                    sarg = argv[i];
+                    server_ip = strdup(sarg);
+                }
+                else {
+                    printf("%s: Error: Expect 'ip' address to follow '%s'! Aborting...\n", module, arg);
+                    return 1;
+                }
+                break;
+#endif // 00000000000000000000000000000000000000000000000000000000000000000000000
+            case 'p':
+                if (i2 < argc) {
+                    i++;
+                    sarg = argv[i];
+                    server_port = atoi(sarg);
+                }
+                else {
+                    printf("%s: Error: Expect 'port' value to follow '%s'! Aborting...\n", module, arg);
+                    return 1;
+                }
+                break;
+            default:
+                printf("%s: Unknown argument '%s'. Try -? for help...\n", module, arg);
+                return 1;
+            }
+        }
+        else {
+            // bear argument
+            printf("%s: Error: What is this '%s'? Use -? for help.\n", module, arg);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+
 
 static void net_exit ( void )
 {
@@ -131,6 +204,13 @@ int main (int argc, char *argv[])
    struct timeval       timeout;
    //struct fd_set        master_set, working_set;
    fd_set master_set, working_set;
+
+   rc = parse_args(argc, argv);
+   if (rc) {
+       if (rc == 2)
+           rc = 0;
+       return rc;
+   }
 
    if (net_init())
        return 1;
@@ -182,7 +262,7 @@ int main (int argc, char *argv[])
    memset(&addr, 0, sizeof(addr));
    addr.sin_family      = AF_INET;
    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-   addr.sin_port        = htons(SERVER_PORT);
+   addr.sin_port        = htons(server_port);
    rc = bind(listen_sd,
              (struct sockaddr *)&addr, sizeof(addr));
    if (SERROR(rc))
