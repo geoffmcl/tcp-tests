@@ -18,6 +18,7 @@
 #include <unistd.h> /* open(), close() */
 #include <string.h> /* memset() */
 #include <sys/time.h> /* struct timeval */
+#include <arpa/inet.h> /* inet_ntoa, ... */
 #endif
 
 #define SPRTF printf
@@ -301,10 +302,10 @@ int main (int argc, char *argv[])
    // Show the server info...
    struct in_addr* pin = (struct in_addr*)&addr.sin_addr;
    char* IP = inet_ntoa(*pin);
-   printf("Server: Listening on addr %s:%u, timeout %u mins...\n",
+   printf("Server: Listening on addr %s:%u, timeout %d mins...\n",
        (IP ? IP : "unk"),
        server_port,
-       (timeout.tv_sec / 60));
+       (int)(timeout.tv_sec / 60));
 
    /*************************************************************/
    /* Loop waiting for incoming connects or for incoming data   */
@@ -337,7 +338,7 @@ int main (int argc, char *argv[])
       /**********************************************************/
       if (rc == 0)
       {
-         printf("  select() time out, after %u mins. End program.\n", (timeout.tv_sec / 60));
+         printf("  select() time out, after %d mins. End program.\n", (int)(timeout.tv_sec / 60));
          break;
       }
       /**********************************************************/
