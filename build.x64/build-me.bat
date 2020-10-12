@@ -2,44 +2,29 @@
 @REM 20161201 - Disbale install
 @set ADDINST=0
 @REM 20161002 - Change to msvc140 build
-@set VCVERS=14
-@set GENERATOR=Visual Studio %VCVERS% Win64
+@set VCVERS=16
+@set TMPGEN=Visual Studio 16 2019
+@REM set GENERATOR=Visual Studio %VCVERS% Win64
+@set TMP3RD=D:\Projects\3rdParty.x64
+
 @REM 20160324 - Change to relative, and use choice
 @set TMPPRJ=tcp-tests
 @echo Build %TMPPRJ% project, in 64-bits
 @set TMPLOG=bldlog-1.txt
 @set BLDDIR=%CD%
 @set TMPROOT=..\..
-@set SET_BAT=%ProgramFiles(x86)%\Microsoft Visual Studio %VCVERS%.0\VC\vcvarsall.bat
-@if NOT EXIST "%SET_BAT%" goto NOBAT
+@REM set SET_BAT=%ProgramFiles(x86)%\Microsoft Visual Studio %VCVERS%.0\VC\vcvarsall.bat
+@REM if NOT EXIST "%SET_BAT%" goto NOBAT
 @REM if NOT EXIST %TMPROOT%\nul goto NOROOT
 @set TMPSRC=..
 @if NOT EXIST %TMPSRC%\CMakeLists.txt goto NOCM
 @set DOPAUSE=1
 
-@if /I "%PROCESSOR_ARCHITECTURE%" EQU "AMD64" (
-@set TMPINST=%TMPROOT%\software.x64
-) ELSE (
- @if /I "%PROCESSOR_ARCHITECTURE%" EQU "x86_64" (
-@set TMPINST=%TMPROOT%\software.x64
- ) ELSE (
-@echo ERROR: Appears 64-bit is NOT available... aborting...
-@goto ISERR
- )
-)
+@set TMPINST=%TMP3RD%
 @if NOT EXIST %TMPINST%\nul goto NOINST
 
 @echo Doing build output to %TMPLOG%
 @echo Doing build output to %TMPLOG% > %TMPLOG%
-
-@echo Doing: 'call "%SET_BAT%" %PROCESSOR_ARCHITECTURE%'
-@echo Doing: 'call "%SET_BAT%" %PROCESSOR_ARCHITECTURE%' >> %TMPLOG%
-@call "%SET_BAT%" %PROCESSOR_ARCHITECTURE% >> %TMPLOG% 2>&1
-@if ERRORLEVEL 1 goto ERR0
-@REM call setupqt64
-@cd %BLDDIR%
-
-@REM :DNARCH
 
 @REM ############################################
 @REM NOTE: SPECIAL INSTALL LOCATION
@@ -47,7 +32,7 @@
 @REM ##########################################
 @REM set TMPINST=F:\Projects\software.x64
 @set TMPOPTS=-DCMAKE_INSTALL_PREFIX=%TMPINST%
-@set TMPOPTS=%TMPOPTS% -G "%GENERATOR%"
+@set TMPOPTS=%TMPOPTS% -G "%TMPGEN%" -A x64
 @REM set TMPOPTS=%TMPOPTS% -DTIDY_CONFIG_FILE="C:\MDOS\tidy5.cfg"
 @REM set TMPOPTS=%TMPOPTS% -DTIDY_USER_CONFIG_FILE="C:\MDOS\tidy5.cfg"
 @REM set TMPOPTS=%TMPOPTS% -DBUILD_SHARED_LIB:BOOL=OFF
@@ -68,9 +53,9 @@
 @echo Begin %DATE% %TIME%, output to %TMPLOG%
 @echo Begin %DATE% %TIME% >> %TMPLOG%
 
-@echo Doing: 'cmake %TMPSRC% %TMPOPTS%'
-@echo Doing: 'cmake %TMPSRC% %TMPOPTS%' >> %TMPLOG%
-@cmake %TMPSRC% %TMPOPTS% >> %TMPLOG% 2>&1
+@echo Doing: 'cmake -S %TMPSRC% %TMPOPTS%'
+@echo Doing: 'cmake -S %TMPSRC% %TMPOPTS%' >> %TMPLOG%
+@cmake -S %TMPSRC% %TMPOPTS% >> %TMPLOG% 2>&1
 @if ERRORLEVEL 1 goto ERR1
 
 @echo Doing: 'cmake --build . --config debug'
