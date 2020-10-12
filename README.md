@@ -119,11 +119,41 @@ Experiments in udp server and client
 
 Some unix code scraped from www, but ported it to windows
 
+2020/10/12: Add port and timeout to server...
+
+```
+$ ./unix_server -?
+unix_server: usage: [options]
+Options:
+ --help  (-h or -?) = This help and exit(0)
+ --port <port)  (p) = Set server port. (def=3333)
+ --time <mins>  (t) = Set listen timeout. (def=6 mins)
+
+ Set up a server listen on INADDR_ANY:port, and accept incoming
+ connections, read, and echo messages, for the timeout... simple...
+```
+
+and IP and port to client...
+
+```
+D:\UTILS\tcp-tests\build.x64>release\unix_client -?
+unix_client: usage: [options]
+Options:
+ --help  (-h or -?) = This help and exit(0)
+ --ip <address> (i) = Set server ip address. (def=127.0.0.1)
+ --port <port) (-p) = Set coomuniation port. (def=3333)
+
+ Create a 'socket', connect to server on IP:port, and offer to send
+ messages to the server... simple...
+```
+
 ##### httpget.exe
 
 This was to do a simple GET to http://crossfeed.fgx.ch, and shows the json received, but FAILS.
 
 ## History
+
+20201012 - small enhancements to unix server, and client.
 
 20151231 - re-named tcp-tests - all SG links removed!
 
@@ -132,6 +162,6 @@ This was to do a simple GET to http://crossfeed.fgx.ch, and shows the json recei
 Have FUN!
 
 Geoff.  
-20170122
+20201012 - 20170122
 
 ; eof
