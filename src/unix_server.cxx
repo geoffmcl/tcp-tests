@@ -82,6 +82,7 @@ typedef int SOCKET;
 #endif /* _MSC_VER y/n */
 
 #define DEF_SERVER_PORT  3333
+#define DEF_SERVER_TO  6
 
 #define TRUE             1
 #define FALSE            0
@@ -89,6 +90,7 @@ typedef int SOCKET;
 static const char* module = "unix_server";
 
 static unsigned short server_port = DEF_SERVER_PORT;
+static unsigned int server_timeout = DEF_SERVER_TO;
 
 void give_help(char* name)
 {
@@ -96,10 +98,11 @@ void give_help(char* name)
     printf("Options:\n");
     printf(" --help  (-h or -?) = This help and exit(0)\n");
     //printf(" --ip <address> (i) = Set server ip address. (def=%s)\n", server_ip);
-    printf(" --port <port) (-p) = Set server port. (def=%u)\n", server_port);
-    //printf("\n");
-    //printf(" Create a 'socket', connect to server on IP:port, and offer to send\n");
-    //printf(" messages to the server... simple...\n");
+    printf(" --port <port)  (p) = Set server port. (def=%u)\n", server_port);
+    printf(" --time <mins>  (t) = Set listen timeout. (def=%u mins)\n", server_timeout);
+    printf("\n");
+    printf(" Set up a server listen on INADDR_ANY:port, and accept incoming\n");
+    printf(" connections, read, and echo messages, for the timeout... simple...\n");
 }
 
 int parse_args(int argc, char** argv)
@@ -120,19 +123,17 @@ int parse_args(int argc, char** argv)
                 give_help(argv[0]);
                 return 2;
                 break;
-#if 0  // 00000000000000000000000000000000000000000000000000000000000000000000
-            case 'i':
+            case 't':
                 if (i2 < argc) {
                     i++;
                     sarg = argv[i];
-                    server_ip = strdup(sarg);
+                    server_timeout = atoi(sarg);
                 }
                 else {
-                    printf("%s: Error: Expect 'ip' address to follow '%s'! Aborting...\n", module, arg);
+                    printf("%s: Error: Expect 'timeout' minutes to follow '%s'! Aborting...\n", module, arg);
                     return 1;
                 }
                 break;
-#endif // 00000000000000000000000000000000000000000000000000000000000000000000000
             case 'p':
                 if (i2 < argc) {
                     i++;
@@ -291,11 +292,19 @@ int main (int argc, char *argv[])
    FD_SET(listen_sd, &master_set);
 
    /*************************************************************/
-   /* Initialize the timeval struct to 3 minutes.  If no        */
-   /* activity after 3 minutes this program will end.           */
+   /* Initialize the timeval struct to 6? minutes.  If no        */
+   /* activity after this program will end.                     */
    /*************************************************************/
-   timeout.tv_sec  = 3 * 60;
+   timeout.tv_sec  = server_timeout * 60;
    timeout.tv_usec = 0;
+
+   // Show the server info...
+   struct in_addr* pin = (struct in_addr*)&addr.sin_addr;
+   char* IP = inet_ntoa(*pin);
+   printf("Server: Listening on addr %s:%u, timeout %u mins...\n",
+       (IP ? IP : "unk"),
+       server_port,
+       (timeout.tv_sec / 60));
 
    /*************************************************************/
    /* Loop waiting for incoming connects or for incoming data   */
@@ -328,7 +337,7 @@ int main (int argc, char *argv[])
       /**********************************************************/
       if (rc == 0)
       {
-         printf("  select() timed out.  End program.\n");
+         printf("  select() time out, after %u mins. End program.\n", (timeout.tv_sec / 60));
          break;
       }
       /**********************************************************/
